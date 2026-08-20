@@ -60,7 +60,8 @@ Useful options:
 
 For a double clickable icon, copy `RunAt100.example.cmd`, set `PROGRAM`, `SCALE`
 and `MONITOR` at the top of the copy and put it on the desktop or in the Start
-menu.
+menu. If the copy does not sit next to `RunAtScale.ps1` any more, point the
+`TOOLS` variable at the folder that holds it.
 
 The console window of the wrapper stays open for as long as the program runs:
 that is the process waiting to put the original scaling back, so do not close it.
