@@ -63,10 +63,40 @@ and `MONITOR` at the top of the copy and put it on the desktop or in the Start
 menu. If the copy does not sit next to `RunAtScale.ps1` any more, point the
 `TOOLS` variable at the folder that holds it.
 
-The console window of the wrapper stays open for as long as the program runs:
-that is the process waiting to put the original scaling back, so do not close it.
-To keep it out of the way, create a shortcut to the `.cmd` file and set Run to
-Minimized in its properties.
+### Getting rid of the console window
+
+The wrapper keeps a console window open for as long as the program runs: that is
+the process waiting to put the original scaling back, so it cannot simply exit.
+It can be hidden though.
+
+- **`-Hidden` / `hidden`** - the script hides the console as soon as it starts and
+  reports errors in a message box instead. The window is still visible for the
+  second or so that PowerShell needs to start up.
+
+  ```bat
+  RunAtScale.cmd "C:\App\app.exe" 100 1 hidden
+  ```
+
+  ```powershell
+  .\RunAtScale.ps1 -Program "C:\App\app.exe" -Hidden
+  ```
+
+  In `RunAt100.example.cmd` this is the `HIDDEN` variable, set to 1 by default.
+
+- **A minimized shortcut** - create a shortcut to the `.cmd` file and set Run to
+  Minimized in its properties. Nothing flashes on screen, the wrapper just sits in
+  the taskbar, which also makes it obvious that it is still running.
+
+- **No window at all, not even the initial flash** - start it through the Windows
+  script host, which has no console of its own. Put this next to the scripts as
+  `RunAt100.vbs` and double click that instead. Some managed machines block `.vbs`
+  and Microsoft has deprecated VBScript, so treat it as the last resort:
+
+  ```vbs
+  tools = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
+  cmd = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File """ & tools & "\RunAtScale.ps1"" -Program ""C:\App\app.exe"" -Scale 100"
+  CreateObject("WScript.Shell").Run cmd, 0, False
+  ```
 
 ## Just read or change the scaling
 

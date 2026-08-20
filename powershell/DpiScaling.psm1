@@ -150,6 +150,43 @@ namespace SetDpi
         public bool IsValid = false;
     }
 
+    /*
+     * Small UI helpers for scripts launched from a batch file or a shortcut:
+     * getting rid of the console window that the launcher opens, and still being
+     * able to report an error once that window is gone.
+     */
+    public static class Ui
+    {
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
+
+        private const int SW_HIDE = 0;
+        private const uint MB_ICONERROR = 0x00000010;
+        private const uint MB_SETFOREGROUND = 0x00010000;
+        private const uint MB_TOPMOST = 0x00040000;
+
+        public static bool HideConsole()
+        {
+            IntPtr window = GetConsoleWindow();
+            if (window == IntPtr.Zero)
+            {
+                return false;
+            }
+            return ShowWindow(window, SW_HIDE);
+        }
+
+        public static void ShowError(string message, string caption)
+        {
+            MessageBoxW(IntPtr.Zero, message, caption, MB_ICONERROR | MB_SETFOREGROUND | MB_TOPMOST);
+        }
+    }
+
     internal static class NativeMethods
     {
         [DllImport("user32.dll")]

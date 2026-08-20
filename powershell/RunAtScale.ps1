@@ -30,6 +30,10 @@
     Pause between the scaling change and the program start. Defaults to 750 ms.
 .PARAMETER KeepScale
     Leaves the new scaling in place instead of restoring the previous one.
+.PARAMETER Hidden
+    Hides the console window of the launcher as soon as the script starts, for
+    double clickable shortcuts. Errors are reported in a message box instead,
+    since there is no window left to print them to.
 .EXAMPLE
     .\RunAtScale.ps1 -Program "C:\Program Files\App\app.exe"
 .EXAMPLE
@@ -57,13 +61,20 @@ param(
 
     [string] $WorkingDirectory,
 
-    [switch] $KeepScale
+    [switch] $KeepScale,
+
+    [switch] $Hidden
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 Import-Module (Join-Path $PSScriptRoot 'DpiScaling.psm1') -Force
+
+if ($Hidden) {
+    # Never let a failure to hide the window stop the program from starting.
+    try { [void] [SetDpi.Ui]::HideConsole() } catch { }
+}
 
 try {
     $splat = @{
@@ -82,6 +93,11 @@ try {
     exit $exitCode
 }
 catch {
-    Write-Host $_.Exception.Message -ForegroundColor Red
+    if ($Hidden) {
+        [SetDpi.Ui]::ShowError($_.Exception.Message, 'RunAtScale')
+    }
+    else {
+        Write-Host $_.Exception.Message -ForegroundColor Red
+    }
     exit 1
 }

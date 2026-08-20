@@ -9,6 +9,9 @@ rem --- edit these ------------------------------------------------------------
 set "PROGRAM=C:\Program Files\MyApp\MyApp.exe"
 set "SCALE=100"
 set "MONITOR=1"
+rem 1 = hide the console window while the program runs (errors still come up in a
+rem message box), 0 = keep it visible, which is handy while setting things up
+set "HIDDEN=1"
 rem Folder holding RunAtScale.ps1 and DpiScaling.psm1. %~dp0 means "next to this
 rem file"; put the full path here instead if you move this copy somewhere else,
 rem for example set "TOOLS=C:\Tools\SetDpi\"  (keep the trailing backslash)
@@ -21,5 +24,8 @@ if not exist "%TOOLS%RunAtScale.ps1" (
     exit /b 1
 )
 
-powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%TOOLS%RunAtScale.ps1" -Program "%PROGRAM%" -Scale %SCALE% -Monitor %MONITOR%
+set "HIDDENFLAG="
+if "%HIDDEN%"=="1" set "HIDDENFLAG=-Hidden"
+
+powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%TOOLS%RunAtScale.ps1" -Program "%PROGRAM%" -Scale %SCALE% -Monitor %MONITOR% %HIDDENFLAG%
 exit /b %ERRORLEVEL%
