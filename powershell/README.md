@@ -69,9 +69,11 @@ The wrapper keeps a console window open for as long as the program runs: that is
 the process waiting to put the original scaling back, so it cannot simply exit.
 It can be hidden though.
 
-- **`-Hidden` / `hidden`** - the script hides the console as soon as it starts and
-  reports errors in a message box instead. The window is still visible for the
-  second or so that PowerShell needs to start up.
+- **`-Hidden` / `hidden`** - the script relaunches itself as a process that has no
+  console at all and returns immediately, so the window that started it closes
+  instead of staying there for the whole session. Errors are reported in a message
+  box, and the exit code of the program is not passed on any more, since nothing
+  is left waiting for it.
 
   ```bat
   RunAtScale.cmd "C:\App\app.exe" 100 1 hidden
@@ -82,13 +84,20 @@ It can be hidden though.
   ```
 
   In `RunAt100.example.cmd` this is the `HIDDEN` variable, set to 1 by default.
+  Double clicking still flashes a window for the second or so that `cmd` and
+  PowerShell need to start; the two options below get rid of that too.
+
+  Note that simply hiding the window is not an option on Windows 11: its default
+  terminal is Windows Terminal, which owns the window from another process, so
+  `ShowWindow()` on the console handle does nothing. Not creating a console in the
+  first place is what works.
 
 - **A minimized shortcut** - create a shortcut to the `.cmd` file and set Run to
   Minimized in its properties. Nothing flashes on screen, the wrapper just sits in
   the taskbar, which also makes it obvious that it is still running.
 
-- **No window at all, not even the initial flash** - start it through the Windows
-  script host, which has no console of its own. Put this next to the scripts as
+- **Not even the initial flash** - start it through the Windows script host,
+  which has no console of its own. Put this next to the scripts as
   `RunAt100.vbs` and double click that instead. Some managed machines block `.vbs`
   and Microsoft has deprecated VBScript, so treat it as the last resort:
 
