@@ -22,6 +22,20 @@ To get the current scale of a monitor, replace the scale argument with `get` to 
 	- `SetDPI.exe get 2` prints `Current Resolution: 250`
 	- `SetDPI.exe value 2` prints `250`
 
+## Without the executable
+
+If you cannot deploy a compiled binary, the [`powershell`](powershell/) folder
+contains the same functionality as a PowerShell module plus batch wrappers, so
+the scaling can be changed from a `.ps1` script, a `.cmd` file, a shortcut or the
+Task Scheduler. It also provides a launcher that runs one program at a given
+scaling and restores the previous one when the program exits:
+
+```bat
+RunAtScale.cmd "C:\Program Files\MyApp\MyApp.exe"
+```
+
+See [powershell/README.md](powershell/README.md).
+
 ## Release
 
 Get the release build and a sample AutoHotkey script with hotkey example from here https://github.com/imniko/SetDPI/releases/
